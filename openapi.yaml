@@ -1,108 +1,14 @@
 openapi: 3.0.1
 info:
-  title: C6-Node Plugin
-  description: Plugin for C6-Node functionality.
+  title: DocuMender
+  description: A ChatGPT plugin to facilitate writing of long publication documents.
   version: 'v1'
 servers:
   - url: http://localhost:3000
 paths:
-  /api/create:
+  /section:
     post:
-      operationId: createSharable
-      summary: Create a Sharable object
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/SharableRequest'
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  id:
-                    type: string
-  /api/read/{id}:
-    get:
-      operationId: readSharable
-      summary: Read a Sharable object by ID
-      parameters:
-        - in: path
-          name: id
-          schema:
-            type: string
-          required: true
-          description: The ID to read.
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: object
-  /api/update/{id}:
-    put:
-      operationId: updateSharable
-      summary: Update a Sharable object by ID
-      parameters:
-        - in: path
-          name: id
-          schema:
-            type: string
-          required: true
-          description: The ID to update.
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/SharableRequest'
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  id:
-                    type: string
-  /api/delete/{id}:
-    delete:
-      operationId: deleteSharable
-      summary: Delete a Sharable object by ID
-      parameters:
-        - in: path
-          name: id
-          schema:
-            type: string
-          required: true
-          description: The ID to delete.
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-  /api/run/{id}:
-    post:
-      operationId: runFunction
-      summary: Run a Function by ID with arguments
-      parameters:
-        - in: path
-          name: id
-          schema:
-            type: string
-          required: true
-          description: The Function ID to run.
+      summary: Create a new section
       requestBody:
         required: true
         content:
@@ -110,69 +16,142 @@ paths:
             schema:
               type: object
               properties:
-                args:
-                  type: array
-                  items:
-                    type: string
+                path:
+                  type: string
+                name:
+                  type: string
+                content:
+                  type: string
       responses:
-        "200":
-          description: OK
+        "201":
+          description: Section created
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  result:
+                  message:
                     type: string
+                  section:
+                    $ref: '#/components/schemas/Section'
+        "404":
+          description: Parent section not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+  /section/{path}:
+    put:
+      summary: Update a section
+      parameters:
+        - in: path
+          name: path
+          schema:
+            type: string
+          required: true
+          description: The path of the section to update
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                content:
+                  type: string
+      responses:
+        "200":
+          description: Section updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  section:
+                    $ref: '#/components/schemas/Section'
+        "404":
+          description: Section not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+    delete:
+      summary: Delete a section
+      parameters:
+        - in: path
+          name: path
+          schema:
+            type: string
+          required: true
+          description: The path of the section to delete
+      responses:
+        "200":
+          description: Section deleted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        "404":
+          description: Section not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+    get:
+      summary: Get a section
+      parameters:
+        - in: path
+          name: path
+          schema:
+            type: string
+          required: true
+          description: The path of the section to get
+      responses:
+        "200":
+          description: Section found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  section:
+                    $ref: '#/components/schemas/Section'
+        "404":
+          description: Section not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+  /section/move:
+    patch:
+      summary: Move a section
+      # Define requestBody, and responses for the moveSection endpoint
+  /save:
+    post:
+      summary: Save the document
+      # Define requestBody, and responses for the saveDocument endpoint
 components:
   schemas:
-    SharableRequest:
+    Section:
       type: object
       properties:
-        sharable:
-          oneOf:
-            - type: object
-              required:
-                - id
-                - type
-                - code
-              properties:
-                id:
-                  type: string
-                type:
-                  type: string
-                  enum:
-                    - function
-                code:
-                  type: string
-            - type: object
-              required:
-                - id
-                - type
-                - schema
-                - data
-              properties:
-                id:
-                  type: string
-                type:
-                  type: string
-                  enum:
-                    - datum
-                schema:
-                  type: string
-                data:
-                  type: object
-            - type: object
-              required:
-                - id
-                - type
-                - fields
-              properties:
-                id:
-                  type: string
-                type:
-                  type: string
-                  enum:
-                    - schema
-                fields:
-                  type: object
+        name:
+          type: string
+       

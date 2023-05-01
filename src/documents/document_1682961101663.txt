@@ -1,0 +1,4 @@
+doc
+
+  title
+  My Document Title
