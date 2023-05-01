@@ -1,0 +1,178 @@
+openapi: 3.0.1
+info:
+  title: C6-Node Plugin
+  description: Plugin for C6-Node functionality.
+  version: 'v1'
+servers:
+  - url: http://localhost:3000
+paths:
+  /api/create:
+    post:
+      operationId: createSharable
+      summary: Create a Sharable object
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SharableRequest'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+  /api/read/{id}:
+    get:
+      operationId: readSharable
+      summary: Read a Sharable object by ID
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: The ID to read.
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+  /api/update/{id}:
+    put:
+      operationId: updateSharable
+      summary: Update a Sharable object by ID
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: The ID to update.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SharableRequest'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+  /api/delete/{id}:
+    delete:
+      operationId: deleteSharable
+      summary: Delete a Sharable object by ID
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: The ID to delete.
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+  /api/run/{id}:
+    post:
+      operationId: runFunction
+      summary: Run a Function by ID with arguments
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: The Function ID to run.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                args:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: string
+components:
+  schemas:
+    SharableRequest:
+      type: object
+      properties:
+        sharable:
+          oneOf:
+            - type: object
+              required:
+                - id
+                - type
+                - code
+              properties:
+                id:
+                  type: string
+                type:
+                  type: string
+                  enum:
+                    - function
+                code:
+                  type: string
+            - type: object
+              required:
+                - id
+                - type
+                - schema
+                - data
+              properties:
+                id:
+                  type: string
+                type:
+                  type: string
+                  enum:
+                    - datum
+                schema:
+                  type: string
+                data:
+                  type: object
+            - type: object
+              required:
+                - id
+                - type
+                - fields
+              properties:
+                id:
+                  type: string
+                type:
+                  type: string
+                  enum:
+                    - schema
+                fields:
+                  type: object
